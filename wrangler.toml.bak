@@ -1,0 +1,14 @@
+# Top-level configuration
+name = "hono-weather"
+# main = "fucntinos/api/[[routes]].ts"
+
+compatibility_date = "2023-08-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[build]
+command = "npm run build"
+watch_dir = ["src", "functions"]
+
+[site]
+bucket = "./dist"
