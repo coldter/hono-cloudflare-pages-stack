@@ -2,7 +2,7 @@ import { zValidator } from '@hono/zod-validator';
 import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 import { Hono } from 'hono';
-import { OPEN_WEATHER_MAP_WEATHER_URL, OPEN_WEATHER_SEARCH_URL } from './contants';
+import { OPEN_WEATHER_MAP_WEATHER_URL, OPEN_WEATHER_SEARCH_URL } from './constants';
 import { WeatherData, WeatherSearchData } from './types';
 
 type Bindings = {
