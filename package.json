@@ -11,12 +11,13 @@
     "preview": "vite preview",
     "format": "prettier --write src/**/*.{ts,js,json}",
     "prepare": "husky install",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "tsc:check": "tsc --noEmit"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.1.8",
     "framer-motion": "^10.16.1",
-    "hono": "^3.5.4",
+    "hono": "3.5.4",
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-debounce-input": "^3.3.0",
