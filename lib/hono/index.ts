@@ -3,11 +3,14 @@ import { HTTPException } from 'hono/http-exception';
 import { z } from 'zod';
 import { Hono } from 'hono';
 import { OPEN_WEATHER_MAP_WEATHER_URL, OPEN_WEATHER_SEARCH_URL } from './constants';
-import { WeatherData, WeatherSearchData } from './types';
+import { KVCachedData, WeatherData, WeatherSearchData } from './types';
+import type { KVNamespace } from '@cloudflare/workers-types';
+import { hashObject } from './utils';
 
 type Bindings = {
   OPEN_WEATHER_MAP_API: string;
   OPEN_WEATHER_MAP_SEARCH_API: string;
+  OpenWeatherMapCache: KVNamespace;
 };
 const app = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
@@ -21,7 +24,15 @@ const searchRoute = app.get(
   ),
   async (c) => {
     const { q } = c.req.valid('query');
+    const cacheKey = `search:${q.trim()}`;
 
+    const cached = await c.env.OpenWeatherMapCache.get<KVCachedData<WeatherSearchData> | null>(
+      cacheKey,
+      'json',
+    );
+    if (cached) {
+      return c.jsonT<WeatherSearchData>(cached.data);
+    }
     const fetchUrl = `${OPEN_WEATHER_SEARCH_URL}?q=${q.trim()}&type=like&sort=population&cnt=30&appid=${
       c.env.OPEN_WEATHER_MAP_SEARCH_API
     }`;
@@ -36,6 +47,20 @@ const searchRoute = app.get(
         return res;
       })
       .then((res) => res.json());
+
+    // Cache the data for 1 hour
+    await c.env.OpenWeatherMapCache.put(
+      cacheKey,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data,
+      }),
+      {
+        expirationTtl: 60 * 60,
+      },
+    ).catch((err) => {
+      console.error(err);
+    });
 
     return c.jsonT<WeatherSearchData>(data);
   },
@@ -66,6 +91,14 @@ const weatherDataRoute = app.get(
   async (c) => {
     // I know...But typescript is hard shit
     const query = c.req.valid('query' as never) as GetWeatherQuery;
+    const queries = c.req.queries();
+    const queryHash = await hashObject(queries);
+    const cacheKey = `weather:hash:${queryHash}`;
+
+    const cached = await c.env.OpenWeatherMapCache.get<KVCachedData | null>(cacheKey, 'json');
+    if (cached) {
+      return c.jsonT<WeatherData>(cached.data);
+    }
 
     let fetchUrl = OPEN_WEATHER_MAP_WEATHER_URL;
     if ('q' in query) {
@@ -87,6 +120,19 @@ const weatherDataRoute = app.get(
         return res;
       })
       .then((res) => res.json());
+
+    await c.env.OpenWeatherMapCache.put(
+      cacheKey,
+      JSON.stringify({
+        timestamp: Date.now(),
+        data,
+      }),
+      {
+        expirationTtl: 60 * 60,
+      },
+    ).catch((err) => {
+      console.error(err);
+    });
 
     return c.jsonT<WeatherData>(data);
   },

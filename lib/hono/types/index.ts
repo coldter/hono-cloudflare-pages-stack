@@ -82,3 +82,8 @@ export interface WeatherDataSys {
   sunrise: number;
   sunset: number;
 }
+
+export interface KVCachedData<T = any> {
+  timestamp: number;
+  data: T;
+}

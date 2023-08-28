@@ -1,6 +1,6 @@
 # Top-level configuration
 name = "hono-weather"
-# main = "fucntinos/api/[[routes]].ts"
+# main = "functions/api/[[routes]].ts"
 
 compatibility_date = "2023-08-01"
 compatibility_flags = ["nodejs_compat"]
