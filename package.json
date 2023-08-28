@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "wrangler pages dev --local --compatibility-date=2023-08-01 -- pnpm vite:dev",
+    "dev": "$( cat secrets.json | jq -r 'keys[] as $k | \"export \\($k)=\\(.[$k])\"') && wrangler pages dev --local --compatibility-date=2023-08-01 --binding OPEN_WEATHER_MAP_API=$OPEN_WEATHER_MAP_API OPEN_WEATHER_MAP_SEARCH_API=$OPEN_WEATHER_MAP_SEARCH_API -- pnpm vite:dev",
     "vite:dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
