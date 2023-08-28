@@ -16,7 +16,7 @@ const searchRoute = app.get(
   zValidator(
     'query',
     z.object({
-      q: z.string().min(1),
+      q: z.string().min(3),
     }),
   ),
   async (c) => {
@@ -51,18 +51,17 @@ type GetWeatherQuery =
     };
 const weatherDataRoute = app.get(
   '/weather',
-  // @ts-ignore
   zValidator(
     'query',
     z.union([
       z.object({
-        q: z.string().min(1),
+        q: z.string().min(3),
       }),
       z.object({
         lat: z.preprocess((val) => Number(val), z.number()),
         lon: z.preprocess((val) => Number(val), z.number()),
       }),
-    ]),
+    ]) as any,
   ),
   async (c) => {
     // I know...But typescript is hard shit

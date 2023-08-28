@@ -4,12 +4,12 @@ import { FormEvent, useContext, useEffect, useState } from 'react';
 import { RiSearchLine, RiDropFill } from 'react-icons/ri';
 import { WiCloudy, WiStrongWind } from 'react-icons/wi';
 import { appSearchClient, appWeatherDataClient } from '../service/service.client';
-import backgroundImageMap from '../assets/images/backgrounds/';
 import { MotionBox } from '../components/MotionBox';
 import { LocationContext } from '../contexts/LocationContext';
 import { DebounceInput } from 'react-debounce-input';
-import { DefaultWeatherData } from '../data';
+import { DefaultWeatherData, DynamicBackGroundImageMap, DynamicIconMap } from '../data';
 import { capitalizeString } from '../utils/helpers';
+import logo from '../assets/images/logo.png';
 
 export default function Landing() {
   const $getSearch = appSearchClient.api.search.$get;
@@ -26,17 +26,30 @@ export default function Landing() {
     if (!location) {
       getLocation();
     } else {
-      handleCityByCordinates(location.lat, location.lng);
+      handleCityByCoordinates(location.lat, location.lng);
     }
   }, []);
-  let background = backgroundImageMap.dayBg;
+
+  let day = true;
+  if (data?.weather[0].icon.includes('n')) {
+    day = false;
+  }
+  let dynamicBg = DynamicBackGroundImageMap.get(data?.weather[0].main);
+  if (!dynamicBg) {
+    dynamicBg = DynamicBackGroundImageMap.get('default');
+  }
+  const background = day ? dynamicBg?.day! : dynamicBg?.night!;
+  let icon: string = DynamicIconMap.get(data?.weather[0].icon)!;
+  if (!icon) {
+    icon = DynamicIconMap.get('default')!;
+  }
 
   /**
    * @description
    * @param lat
    * @param lon
    */
-  async function handleCityByCordinates(lat: number, lon: number) {
+  async function handleCityByCoordinates(lat: number, lon: number) {
     try {
       const response = await $getWeather({ query: { lat, lon } });
       if (!response.ok) {
@@ -46,7 +59,7 @@ export default function Landing() {
       setData(responseData);
       setValid(true);
     } catch (error) {
-      console.error('🧯 🔥 ~ handleCityByCordinates ~ error', error);
+      console.error('🧯 🔥 ~ handleCityByCoordinates ~ error', error);
       // alert('Error getting data');
     }
   }
@@ -112,7 +125,7 @@ export default function Landing() {
           lng: longitude,
         });
 
-        handleCityByCordinates(latitude, longitude);
+        handleCityByCoordinates(latitude, longitude);
       });
     } else {
       alert('Browser does not support geolocation');
@@ -126,9 +139,9 @@ export default function Landing() {
           <img src={background} alt="Wallpaper" className="img-background" />
         </div>
         <div className="main-grid">
-          <div className="app-name">
-            {/* // TODO: Fix this */}
-            <img src={''} alt="AppIcon" />
+          <div className="app-name-c">
+            <span className="app-name-text">Weather App</span>
+            <img src={logo} alt="logo" height="30px" />
           </div>
           <MotionBox>
             <div className="content">
@@ -168,7 +181,7 @@ export default function Landing() {
                                 key={result.coord.lat}
                                 className="result-item"
                                 onClick={() =>
-                                  handleCityByCordinates(result.coord.lat, result.coord.lon)
+                                  handleCityByCoordinates(result.coord.lat, result.coord.lon)
                                 }
                               >
                                 <img className="result-flag" src={flag} alt="flag" />
@@ -187,8 +200,7 @@ export default function Landing() {
                   </form>
                 </div>
                 <div className="result">
-                  {/* // TODO: Fix this */}
-                  {/* <img src={icon} alt="icon" className="weather-icon" /> */}
+                  <img src={icon} alt="icon" className="weather-icon" />
                   <h1 className="temperature">
                     {data?.main.temp.toFixed(0)}
                     <span>ºC</span>
@@ -209,16 +221,18 @@ export default function Landing() {
 
                 <div className="other-results">
                   <div className="other">
-                    Thermal sensation:
+                    Avg Temp:
                     <br />
                     <span>{data?.main.feels_like.toFixed(1)} ºC</span>
                   </div>
                   <div className="other">
-                    Temp. Minimum: <br />
+                    Min Temp:
+                    <br />
                     <span>{data?.main.temp_min.toFixed(1)} ºC</span>
                   </div>
                   <div className="other">
-                    Maximum temperature: <br />
+                    Max Temp:
+                    <br />
                     <span>{data?.main.temp_max.toFixed(1)} ºC</span>
                   </div>
                 </div>
@@ -264,11 +278,12 @@ export default function Landing() {
                 {data?.name !== '-' && (
                   <div className="go-maps">
                     <a
+                      className="go-maps-link"
                       href={`https://www.google.com/maps/@${data?.coord.lat},${data?.coord.lon},12z`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Open location in Google Maps
+                      Open location in Maps
                     </a>
                   </div>
                 )}

@@ -39,6 +39,19 @@
   text-decoration: none;
   padding-right: 10px;
 }
+.app-name-c {
+  display: flex;
+  align-items: center;
+  padding-bottom: 5px;
+}
+.app-name-text {
+  font-size: 20px;
+  color: var(--color-text);
+  transition: color 0.2s;
+  font-weight: 700;
+  padding-left: 10px;
+  padding-right: 10px;
+}
 
 .credits:hover,
 .credits a:hover {
@@ -366,10 +379,9 @@ div.secondary .secondary-results .other-secondary-results {
   display: flex;
   align-items: center;
   justify-content: center;
-  grid-area: figure;
-  padding: 30px 20px;
+  grid-area: auto;
+  padding: 10px 15px;
   justify-self: center;
-  cursor: pointer;
 }
 
 .secondary .go-maps a {
@@ -382,13 +394,13 @@ div.secondary .secondary-results .other-secondary-results {
   background-color: var(--color-content-bg);
   display: flex;
   align-items: center;
-
   transition: all 0.2s;
 }
 
-.secondary .go-maps:hover a {
+.secondary .go-maps-link:hover {
   color: var(--color-content-bg);
   background-color: var(--color-text);
+  cursor: pointer;
 }
 
 @media (max-width: 1250px) {
@@ -399,6 +411,9 @@ div.secondary .secondary-results .other-secondary-results {
   }
 
   .app-name {
+    display: none;
+  }
+  .app-name-c {
     display: none;
   }
 

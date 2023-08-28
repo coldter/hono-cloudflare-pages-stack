@@ -1,1 +1,5 @@
 *.cjs
+/pages
+dist
+build
+node_modules
