@@ -90,7 +90,7 @@ export default function Landing() {
    * @description
    * @param e
    */
-  async function handleCity(e: FormEvent) {
+  async function handleCity(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!city || city.length < 3) {
       return;
