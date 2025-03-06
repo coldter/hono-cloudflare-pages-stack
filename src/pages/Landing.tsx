@@ -212,7 +212,7 @@ export default function Landing() {
                     {`${data?.name}, ${data?.sys.country}`}&nbsp;&nbsp;
                     {data?.sys.country !== '-' && (
                       <img
-                        src={`https://raw.githubusercontent.com/hjnilsson/country-flags/master/png100px/${data?.sys.country.toLowerCase()}.png`}
+                        src={`https://raw.githubusercontent.com/hampusborgos/country-flags/70d8cfc03972162a2c93c985f4a9b7a8b7f1a8e0/svg/${data?.sys.country.toLowerCase()}.svg`}
                         alt="country"
                       />
                     )}
